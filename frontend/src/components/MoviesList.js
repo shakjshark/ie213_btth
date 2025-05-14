@@ -23,7 +23,9 @@ function MoviesList() {
     MovieDataService.getAll(currentPage)
       .then(response => {
         console.log("Movies response:", response.data);
-        setMovies(response.data.movies);
+        if (response.data && response.data.movies) {
+          setMovies(response.data.movies);
+        }
         setLoading(false);
       })
       .catch(e => {
@@ -37,7 +39,9 @@ function MoviesList() {
     MovieDataService.getRatings()
       .then(response => {
         console.log("Ratings response:", response.data);
-        setRatings(["All Ratings"].concat(response.data.rating));
+        if (response.data && response.data.rating) {
+          setRatings(["All Ratings"].concat(response.data.rating));
+        }
       })
       .catch(e => {
         console.error("Error fetching ratings:", e);
@@ -58,7 +62,9 @@ function MoviesList() {
     MovieDataService.findByTitle(searchTitle, currentPage)
       .then(response => {
         console.log("Search by title response:", response.data);
-        setMovies(response.data.movies);
+        if (response.data && response.data.movies) {
+          setMovies(response.data.movies);
+        }
         setLoading(false);
       })
       .catch(e => {
@@ -77,7 +83,9 @@ function MoviesList() {
       MovieDataService.findByRating(searchRating, currentPage)
         .then(response => {
           console.log("Search by rating response:", response.data);
-          setMovies(response.data.movies);
+          if (response.data && response.data.movies) {
+            setMovies(response.data.movies);
+          }
           setLoading(false);
         })
         .catch(e => {
@@ -88,18 +96,10 @@ function MoviesList() {
     }
   };
 
-  if (loading) {
-    return <div className="text-center mt-5">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center mt-5 text-danger">{error}</div>;
-  }
-
   return (
-    <Container>
-      <Row className="mb-3">
-        <Col md={6}>
+    <div className="container mt-3">
+      <div className="row mb-3">
+        <div className="col-md-6">
           <Form.Group>
             <Form.Control
               type="text"
@@ -116,8 +116,8 @@ function MoviesList() {
               Search
             </Button>
           </Form.Group>
-        </Col>
-        <Col md={6}>
+        </div>
+        <div className="col-md-6">
           <Form.Group>
             <Form.Select 
               onChange={onChangeSearchRating}
@@ -138,53 +138,49 @@ function MoviesList() {
               Search
             </Button>
           </Form.Group>
-        </Col>
-      </Row>
-      
-      <Row xs={1} md={2} lg={3} className="g-4">
-        {movies && movies.length > 0 ? (
-          movies.map((movie) => (
-            <Col key={movie._id}>
-              <Card className="h-100">
-                {movie.poster && (
-                  <Card.Img 
-                    variant="top" 
-                    src={movie.poster} 
-                    alt={movie.title}
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
-                  />
-                )}
-                <Card.Body>
-                  <Card.Title>{movie.title}</Card.Title>
-                  <Card.Text>
-                    Rating: {movie.rated || 'Not rated'}
-                  </Card.Text>
-                  <Card.Text>
-                    {movie.plot ? (
-                      movie.plot.length > 150 
-                        ? `${movie.plot.substring(0, 150)}...` 
-                        : movie.plot
-                    ) : 'No plot available'}
-                  </Card.Text>
-                  <Link 
-                    to={`/movies/${movie._id}`} 
-                    className="btn btn-primary"
-                  >
-                    View Reviews
-                  </Link>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))
-        ) : (
-          <Col xs={12}>
-            <div className="text-center mt-5">No movies found</div>
-          </Col>
-        )}
-      </Row>
-    </Container>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="text-center">Loading...</div>
+      ) : error ? (
+        <div className="text-center text-danger">{error}</div>
+      ) : (
+        <div className="row">
+          {movies && movies.length > 0 ? (
+            movies.map((movie) => (
+              <div className="col-lg-4 pb-3" key={movie._id}>
+                <div className="card h-100">
+                  <div className="card-body">
+                    <h5 className="card-title">{movie.title}</h5>
+                    <p className="card-text">
+                      Rating: {movie.rated || 'Not rated'}
+                    </p>
+                    <p className="card-text">
+                      {movie.plot ? (
+                        movie.plot.length > 150 
+                          ? `${movie.plot.substring(0, 150)}...` 
+                          : movie.plot
+                      ) : 'No plot available'}
+                    </p>
+                    <Link 
+                      to={`/movies/${movie._id}`}
+                      className="btn btn-primary"
+                    >
+                      View Reviews
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="col-12 text-center">
+              <p>No movies found</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 
