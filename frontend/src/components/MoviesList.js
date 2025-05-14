@@ -30,6 +30,7 @@ function MoviesList() {
     MovieDataService.getRatings()
       .then(response => {
         console.log(response.data);
+        // Update to match the API response structure
         setRatings(["All Ratings"].concat(response.data.rating));
       })
       .catch(e => {
@@ -47,8 +48,8 @@ function MoviesList() {
     setSearchRating(searchRating);
   };
 
-  const find = (query, by) => {
-    MovieDataService.find(query, by)
+  const findByTitle = () => {
+    MovieDataService.findByTitle(searchTitle)
       .then(response => {
         console.log(response.data);
         setMovies(response.data.movies);
@@ -58,15 +59,18 @@ function MoviesList() {
       });
   };
 
-  const findByTitle = () => {
-    find(searchTitle, "title");
-  };
-
   const findByRating = () => {
     if (searchRating === "All Ratings") {
       retrieveMovies();
     } else {
-      find(searchRating, "rated");
+      MovieDataService.findByRating(searchRating)
+        .then(response => {
+          console.log(response.data);
+          setMovies(response.data.movies);
+        })
+        .catch(e => {
+          console.error(e);
+        });
     }
   };
 
@@ -115,24 +119,22 @@ function MoviesList() {
         </Col>
       </Row>
       <Row xs={1} md={2} lg={3} className="g-4 mt-2">
-        {movies.map((movie) => {
-          return (
-            <Col key={movie._id}>
-              <Card className="h-100">
-                <Card.Body>
-                  <Card.Title>{movie.title}</Card.Title>
-                  <Card.Text>
-                    Rating: {movie.rated}
-                  </Card.Text>
-                  <Card.Text>{movie.plot}</Card.Text>
-                  <Link to={"/movies/" + movie._id} className="btn btn-primary">
-                    View Reviews
-                  </Link>
-                </Card.Body>
-              </Card>
-            </Col>
-          );
-        })}
+        {movies && movies.map((movie) => (
+          <Col key={movie._id}>
+            <Card className="h-100">
+              <Card.Body>
+                <Card.Title>{movie.title}</Card.Title>
+                <Card.Text>
+                  Rating: {movie.rated}
+                </Card.Text>
+                <Card.Text>{movie.plot}</Card.Text>
+                <Link to={"/movies/" + movie._id} className="btn btn-primary">
+                  View Reviews
+                </Link>
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
       </Row>
     </div>
   );
