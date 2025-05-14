@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import MovieDataService from "../services/movies";
 import { Link } from "react-router-dom";
-import { Card, Form, Row, Col, Button, Container } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
 
 function MoviesList() {
   const [movies, setMovies] = useState([]);
@@ -23,9 +23,7 @@ function MoviesList() {
     MovieDataService.getAll(currentPage)
       .then(response => {
         console.log("Movies response:", response.data);
-        if (response.data && response.data.movies) {
-          setMovies(response.data.movies);
-        }
+        setMovies(response.data.movies || []);
         setLoading(false);
       })
       .catch(e => {
@@ -62,9 +60,7 @@ function MoviesList() {
     MovieDataService.findByTitle(searchTitle, currentPage)
       .then(response => {
         console.log("Search by title response:", response.data);
-        if (response.data && response.data.movies) {
-          setMovies(response.data.movies);
-        }
+        setMovies(response.data.movies || []);
         setLoading(false);
       })
       .catch(e => {
@@ -83,9 +79,7 @@ function MoviesList() {
       MovieDataService.findByRating(searchRating, currentPage)
         .then(response => {
           console.log("Search by rating response:", response.data);
-          if (response.data && response.data.movies) {
-            setMovies(response.data.movies);
-          }
+          setMovies(response.data.movies || []);
           setLoading(false);
         })
         .catch(e => {
@@ -98,6 +92,8 @@ function MoviesList() {
 
   return (
     <div className="container mt-3">
+      <h2 className="mb-3">Movies List</h2>
+      
       <div className="row mb-3">
         <div className="col-md-6">
           <Form.Group>
@@ -109,7 +105,6 @@ function MoviesList() {
             />
             <Button 
               variant="primary"
-              type="button"
               onClick={findByTitle}
               className="mt-2"
             >
@@ -131,7 +126,6 @@ function MoviesList() {
             </Form.Select>
             <Button
               variant="primary"
-              type="button"
               onClick={findByRating}
               className="mt-2"
             >
