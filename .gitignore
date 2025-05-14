@@ -1,0 +1,9 @@
+# .gitignore
+
+# Bỏ qua thư mục node_modules
+node_modules/
+
+# Bỏ qua các file cache
+.cache/
+dist/
+build/
